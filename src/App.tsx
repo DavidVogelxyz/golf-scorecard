@@ -38,9 +38,12 @@ function App() {
   const getTotalPar = () => holes.reduce((sum, hole) => sum + hole.par, 0);
   const getTotalPlayerScore = () => holes.reduce((sum, hole) => sum + hole.playerScore, 0);
   const getTotalDifference = () => {
-    const totalPar = getTotalPar();
-    const totalPlayer = getTotalPlayerScore();
-    if (totalPlayer === 0) return '-';
+    // Only calculate difference for holes where player has entered a score
+    const playedHoles = holes.filter(hole => hole.playerScore > 0);
+    if (playedHoles.length === 0) return '-';
+    
+    const totalPar = playedHoles.reduce((sum, hole) => sum + hole.par, 0);
+    const totalPlayer = playedHoles.reduce((sum, hole) => sum + hole.playerScore, 0);
     const diff = totalPlayer - totalPar;
     if (diff === 0) return 'E';
     if (diff > 0) return `+${diff}`;
@@ -113,7 +116,13 @@ function App() {
           </div>
           <div className="stat-card">
             <h3>Performance</h3>
-            <div className={`stat-value ${getTotalPlayerScore() > 0 ? (getTotalPlayerScore() > getTotalPar() ? 'over-par' : getTotalPlayerScore() < getTotalPar() ? 'under-par' : 'even') : ''}`}>
+            <div className={`stat-value ${(() => {
+              const playedHoles = holes.filter(hole => hole.playerScore > 0);
+              if (playedHoles.length === 0) return '';
+              const totalPar = playedHoles.reduce((sum, hole) => sum + hole.par, 0);
+              const totalPlayer = playedHoles.reduce((sum, hole) => sum + hole.playerScore, 0);
+              return totalPlayer > totalPar ? 'over-par' : totalPlayer < totalPar ? 'under-par' : 'even';
+            })()}`}>
               {getTotalDifference()}
             </div>
           </div>
