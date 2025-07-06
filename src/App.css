@@ -29,13 +29,9 @@
   opacity: 0.9;
 }
 
-.scorecard-container {
-  max-width: 1200px;
+.scorecard-wrapper {
+  max-width: 800px;
   margin: 0 auto;
-  display: grid;
-  grid-template-columns: 1fr 300px;
-  gap: 30px;
-  align-items: start;
 }
 
 .scorecard {
@@ -43,6 +39,10 @@
   border-radius: 15px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  height: 70vh;
+  min-height: 500px;
 }
 
 .scorecard-header {
@@ -52,6 +52,9 @@
   color: white;
   font-weight: bold;
   text-align: center;
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
 
 .header-cell {
@@ -61,6 +64,30 @@
 
 .header-cell:last-child {
   border-right: none;
+}
+
+.holes-container {
+  flex: 1;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #bdc3c7 #ecf0f1;
+}
+
+.holes-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.holes-container::-webkit-scrollbar-track {
+  background: #ecf0f1;
+}
+
+.holes-container::-webkit-scrollbar-thumb {
+  background: #bdc3c7;
+  border-radius: 4px;
+}
+
+.holes-container::-webkit-scrollbar-thumb:hover {
+  background: #95a5a6;
 }
 
 .hole-row {
@@ -135,6 +162,9 @@
   color: white;
   font-weight: bold;
   text-align: center;
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
 }
 
 .total-label {
@@ -159,60 +189,19 @@
   color: #f39c12;
 }
 
-.stats-panel {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.stat-card {
-  background: white;
-  border-radius: 12px;
-  padding: 25px;
-  text-align: center;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s ease;
-}
-
-.stat-card:hover {
-  transform: translateY(-2px);
-}
-
-.stat-card h3 {
-  color: #7f8c8d;
-  font-size: 0.9rem;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  margin-bottom: 10px;
-}
-
-.stat-value {
-  font-size: 2.5rem;
-  font-weight: bold;
-  color: #2c3e50;
-}
-
-.stat-value.over-par {
-  color: #e74c3c;
-}
-
-.stat-value.under-par {
-  color: #27ae60;
-}
-
-.stat-value.even {
-  color: #f39c12;
-}
-
 /* Responsive Design */
 @media (max-width: 768px) {
-  .scorecard-container {
-    grid-template-columns: 1fr;
-    gap: 20px;
+  .app {
+    padding: 10px;
   }
   
   .app-header h1 {
     font-size: 2rem;
+  }
+  
+  .scorecard {
+    height: 80vh;
+    min-height: 600px;
   }
   
   .scorecard-header,
@@ -228,19 +217,16 @@
   .score-input input {
     font-size: 0.9rem;
   }
-  
-  .stat-card {
-    padding: 20px;
-  }
-  
-  .stat-value {
-    font-size: 2rem;
-  }
 }
 
 @media (max-width: 480px) {
   .app {
-    padding: 10px;
+    padding: 5px;
+  }
+  
+  .scorecard {
+    height: 85vh;
+    border-radius: 10px;
   }
   
   .scorecard-header,
@@ -259,6 +245,11 @@
   .total-score,
   .total-difference {
     padding: 10px 5px;
+    font-size: 0.8rem;
+  }
+  
+  .score-input input {
+    padding: 6px;
     font-size: 0.8rem;
   }
 }

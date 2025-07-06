@@ -57,7 +57,7 @@ function App() {
         <p>Track your game with real-time calculations</p>
       </header>
       
-      <div className="scorecard-container">
+      <div className="scorecard-wrapper">
         <div className="scorecard">
           <div className="scorecard-header">
             <div className="header-cell">Hole</div>
@@ -66,57 +66,42 @@ function App() {
             <div className="header-cell">+/-</div>
           </div>
           
-          {holes.map(hole => (
-            <div key={hole.number} className="hole-row">
-              <div className="hole-number">{hole.number}</div>
-              <div className="par-input">
-                <input
-                  type="number"
-                  min="1"
-                  max="6"
-                  value={hole.par}
-                  onChange={(e) => updateHole(hole.number, 'par', parseInt(e.target.value) || 0)}
-                  className="score-input"
-                />
+          <div className="holes-container">
+            {holes.map(hole => (
+              <div key={hole.number} className="hole-row">
+                <div className="hole-number">{hole.number}</div>
+                <div className="par-input">
+                  <input
+                    type="number"
+                    min="1"
+                    max="6"
+                    value={hole.par}
+                    onChange={(e) => updateHole(hole.number, 'par', parseInt(e.target.value) || 0)}
+                    className="score-input"
+                  />
+                </div>
+                <div className="score-input">
+                  <input
+                    type="number"
+                    min="0"
+                    value={hole.playerScore === 0 ? '' : hole.playerScore}
+                    onChange={(e) => updateHole(hole.number, 'playerScore', parseInt(e.target.value) || 0)}
+                    className="score-input"
+                    placeholder="0"
+                  />
+                </div>
+                <div className={`difference ${hole.playerScore > 0 ? (hole.playerScore > hole.par ? 'over-par' : hole.playerScore < hole.par ? 'under-par' : 'even') : ''}`}>
+                  {getDifference(hole.par, hole.playerScore)}
+                </div>
               </div>
-              <div className="score-input">
-                <input
-                  type="number"
-                  min="0"
-                  value={hole.playerScore === 0 ? '' : hole.playerScore}
-                  onChange={(e) => updateHole(hole.number, 'playerScore', parseInt(e.target.value) || 0)}
-                  className="score-input"
-                  placeholder="0"
-                />
-              </div>
-              <div className={`difference ${hole.playerScore > 0 ? (hole.playerScore > hole.par ? 'over-par' : hole.playerScore < hole.par ? 'under-par' : 'even') : ''}`}>
-                {getDifference(hole.par, hole.playerScore)}
-              </div>
-            </div>
-          ))}
+            ))}
+          </div>
           
           <div className="totals-row">
             <div className="total-label">TOTALS</div>
             <div className="total-par">{getTotalPar()}</div>
             <div className="total-score">{getTotalPlayerScore()}</div>
-            <div className={`total-difference ${getTotalPlayerScore() > 0 ? (getTotalPlayerScore() > getTotalPar() ? 'over-par' : getTotalPlayerScore() < getTotalPar() ? 'under-par' : 'even') : ''}`}>
-              {getTotalDifference()}
-            </div>
-          </div>
-        </div>
-        
-        <div className="stats-panel">
-          <div className="stat-card">
-            <h3>Course Par</h3>
-            <div className="stat-value">{getTotalPar()}</div>
-          </div>
-          <div className="stat-card">
-            <h3>Your Score</h3>
-            <div className="stat-value">{getTotalPlayerScore()}</div>
-          </div>
-          <div className="stat-card">
-            <h3>Performance</h3>
-            <div className={`stat-value ${(() => {
+            <div className={`total-difference ${(() => {
               const playedHoles = holes.filter(hole => hole.playerScore > 0);
               if (playedHoles.length === 0) return '';
               const totalPar = playedHoles.reduce((sum, hole) => sum + hole.par, 0);
