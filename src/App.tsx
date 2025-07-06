@@ -83,7 +83,7 @@ function App() {
                 <input
                   type="number"
                   min="0"
-                  value={hole.playerScore}
+                  value={hole.playerScore === 0 ? '' : hole.playerScore}
                   onChange={(e) => updateHole(hole.number, 'playerScore', parseInt(e.target.value) || 0)}
                   className="score-input"
                   placeholder="0"
