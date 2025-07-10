@@ -5,6 +5,7 @@ interface Hole {
   number: number;
   par: number;
   playerScore: number;
+  notes: string;
 }
 
 function App() {
@@ -13,15 +14,18 @@ function App() {
     return Array.from({ length: 18 }, (_, index) => ({
       number: index + 1,
       par: 4,
-      playerScore: 0
+      playerScore: 0,
+      notes: ''
     }));
   });
 
-  const updateHole = (holeNumber: number, field: 'par' | 'playerScore', value: number) => {
+  const [courseNotes, setCourseNotes] = useState('');
+
+  const updateHole = (holeNumber: number, field: 'par' | 'playerScore' | 'notes', value: number | string) => {
     setHoles(prevHoles => 
       prevHoles.map(hole => 
         hole.number === holeNumber 
-          ? { ...hole, [field]: Math.max(0, value) }
+          ? { ...hole, [field]: field === 'playerScore' ? Math.max(0, value as number) : value }
           : hole
       )
     );
@@ -64,6 +68,7 @@ function App() {
             <div className="header-cell">Par</div>
             <div className="header-cell">Score</div>
             <div className="header-cell">+/-</div>
+            <div className="header-cell">Notes</div>
           </div>
           
           <div className="holes-container">
@@ -93,6 +98,15 @@ function App() {
                 <div className={`difference ${hole.playerScore > 0 ? (hole.playerScore > hole.par ? 'over-par' : hole.playerScore < hole.par ? 'under-par' : 'even') : ''}`}>
                   {getDifference(hole.par, hole.playerScore)}
                 </div>
+                <div className="notes-input">
+                  <textarea
+                    value={hole.notes}
+                    onChange={(e) => updateHole(hole.number, 'notes', e.target.value)}
+                    className="notes-textarea"
+                    placeholder="Add notes..."
+                    rows={2}
+                  />
+                </div>
               </div>
             ))}
           </div>
@@ -109,6 +123,15 @@ function App() {
               return totalPlayer > totalPar ? 'over-par' : totalPlayer < totalPar ? 'under-par' : 'even';
             })()}`}>
               {getTotalDifference()}
+            </div>
+            <div className="course-notes">
+              <textarea
+                value={courseNotes}
+                onChange={(e) => setCourseNotes(e.target.value)}
+                className="course-notes-textarea"
+                placeholder="Course notes..."
+                rows={2}
+              />
             </div>
           </div>
         </div>
