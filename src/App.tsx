@@ -54,12 +54,78 @@ function App() {
     return diff.toString();
   };
 
+  // --- Export Logic ---
+  const getExportFilename = (ext: string) => {
+    const date = new Date();
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, '0');
+    const d = String(date.getDate()).padStart(2, '0');
+    return `golf-scorecard-${y}${m}${d}.${ext}`;
+  };
+
+  const handleExportCSV = () => {
+    let csv = 'Hole,Par,Score,Notes\n';
+    holes.forEach(hole => {
+      // Escape notes for CSV
+      const notes = '"' + (hole.notes || '').replace(/"/g, '""') + '"';
+      csv += `${hole.number},${hole.par},${hole.playerScore},${notes}\n`;
+    });
+    csv += `\nCourse Notes:,"${(courseNotes || '').replace(/"/g, '""')}"\n`;
+    downloadFile(csv, getExportFilename('csv'), 'text/csv');
+  };
+
+  const handleExportJSON = () => {
+    const data = {
+      holes: holes.map(hole => ({
+        number: hole.number,
+        par: hole.par,
+        playerScore: hole.playerScore,
+        notes: hole.notes
+      })),
+      courseNotes
+    };
+    const json = JSON.stringify(data, null, 2);
+    downloadFile(json, getExportFilename('json'), 'application/json');
+  };
+
+  const handleExportTXT = () => {
+    let txt = 'Golf Scorecard\n';
+    txt += '-----------------------------\n';
+    holes.forEach(hole => {
+      txt += `Hole ${hole.number}: Par ${hole.par}, Score ${hole.playerScore}\n`;
+      if (hole.notes) txt += `  Notes: ${hole.notes}\n`;
+    });
+    txt += '\nCourse Notes:\n';
+    txt += courseNotes ? courseNotes + '\n' : '';
+    downloadFile(txt, getExportFilename('txt'), 'text/plain');
+  };
+
+  function downloadFile(data: string, filename: string, mime: string) {
+    const blob = new Blob([data], { type: mime });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => {
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }, 0);
+  }
+
   return (
     <div className="app">
       <header className="app-header">
         <h1>🏌️‍♂️ Golf Scorecard</h1>
         <p>Track your game with real-time calculations</p>
       </header>
+
+      <div className="export-section">
+        <button className="export-btn" onClick={handleExportCSV}>Export CSV</button>
+        <button className="export-btn" onClick={handleExportJSON}>Export JSON</button>
+        <button className="export-btn" onClick={handleExportTXT}>Export TXT</button>
+      </div>
       
       <div className="scorecard-wrapper">
         <div className="scorecard">
